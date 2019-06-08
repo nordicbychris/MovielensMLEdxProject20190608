@@ -33,10 +33,10 @@ predicted_ratings <- mu_hat + validation %>%
   left_join(movie_avgs, by='movieId') %>%
   .$b_i
 
-model_1_rmse <- RMSE(predicted_ratings, validation$rating)
+model_2_rmse <- RMSE(predicted_ratings, validation$rating)
 rmse_results <- bind_rows(rmse_results,
                           data_frame(method="Movie Rating Effect Model",
-                                     RMSE = model_1_rmse ))
+                                     RMSE = model_2_rmse ))
 rmse_results %>% knitr::kable()
 
 # Model 3: also including average user ratings
@@ -53,10 +53,10 @@ predicted_ratings <- validation %>%
   mutate(pred = mu_hat + b_i + b_u) %>%
   .$pred
 
-model_2_rmse <- RMSE(predicted_ratings, validation$rating)
+model_3_rmse <- RMSE(predicted_ratings, validation$rating)
 rmse_results <- bind_rows(rmse_results,
                           data_frame(method="Movie + User Effects Model",  
-                                     RMSE = model_2_rmse ))
+                                     RMSE = model_3_rmse ))
 rmse_results %>% knitr::kable()
 
 
