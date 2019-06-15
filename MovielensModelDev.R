@@ -118,7 +118,7 @@ edx %>%
   geom_errorbar() + 
   xlab("Genres") +
   ylab("Average rating") +
-  ggtitle("Mean rating of films in each genre") +
+  ggtitle("Average rating of films in each genre") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # This shows a clear genre effect in this dataset
 
@@ -181,8 +181,23 @@ rmse_results <- bind_rows(rmse_results,
                                      RMSE = model_3_rmse ))
 rmse_results %>% knitr::kable()
 
-# Model 4: also including average genre ratings
-# Note: same as this: lm(rating ~ as.factor(movieId) + as.factor(userId) + as.factor(genres))
+# Model 4: movie rating plus average genre ratings
+# Note: same as this: lm(rating ~ as.factor(movieId) + as.factor(genres))
 
+genre_avgs <- edx %>% 
+  group_by(userId) %>% 
+  summarize(b_g = mean(rating - mu_hat))
 
+predicted_ratings <- mu_hat + validation %>% 
+  left_join(genre_avgs, by='userId') %>%
+  .$b_g
 
+model_4_rmse <- RMSE(predicted_ratings, validation$rating)
+rmse_results <- bind_rows(rmse_results,
+                          data_frame(method="Genre Effect Model",  
+                                     RMSE = model_4_rmse ))
+
+# The final list of models sorted by increasing RMSE
+rmse_results %>% 
+  arrange(RMSE) %>%
+  knitr::kable()
